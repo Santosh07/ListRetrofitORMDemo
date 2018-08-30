@@ -1,12 +1,20 @@
 package com.santoshdhakal.internshipchallenge.models;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+
+@Entity
 public class PostModel {
     private Integer userId;
 
+    @PrimaryKey
     private Integer id;
 
+    @ColumnInfo(name= "title")
     private String title;
 
+    @ColumnInfo(name= "body")
     private String body;
 
     public PostModel(Integer userId, Integer id, String title, String body)

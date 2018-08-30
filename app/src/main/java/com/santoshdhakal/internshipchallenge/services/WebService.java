@@ -7,7 +7,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.GET;
 
-public interface GetDataService {
+public interface WebService {
     @GET("/posts")
     Call<List<PostModel>> getAllPosts();
 }

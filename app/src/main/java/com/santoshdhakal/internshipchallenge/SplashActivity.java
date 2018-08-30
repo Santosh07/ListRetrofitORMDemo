@@ -2,15 +2,11 @@ package com.santoshdhakal.internshipchallenge;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
 
 import com.santoshdhakal.internshipchallenge.models.PostModel;
 import com.santoshdhakal.internshipchallenge.network.RetrofitClientInstance;
-import com.santoshdhakal.internshipchallenge.services.GetDataService;
+import com.santoshdhakal.internshipchallenge.services.WebService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +22,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        WebService service = RetrofitClientInstance.getRetrofitInstance().create(WebService.class);
         Call<List<PostModel>> call = service.getAllPosts();
         call.enqueue(new Callback<List<PostModel>>() {
             @Override
