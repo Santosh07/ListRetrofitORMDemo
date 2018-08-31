@@ -1,4 +1,4 @@
-package com.santoshdhakal.internshipchallenge.network;
+package com.santoshdhakal.internshipchallenge.singletons;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

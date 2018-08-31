@@ -11,10 +11,8 @@ public class PostModel {
     @PrimaryKey
     private Integer id;
 
-    @ColumnInfo(name= "title")
     private String title;
 
-    @ColumnInfo(name= "body")
     private String body;
 
     public PostModel(Integer userId, Integer id, String title, String body)
