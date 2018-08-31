@@ -1,49 +1,46 @@
 package com.santoshdhakal.internshipchallenge;
 
-import android.os.AsyncTask;
+import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.santoshdhakal.internshipchallenge.models.UserModel;
-import com.santoshdhakal.internshipchallenge.singletons.AppDatabase;
+import com.santoshdhakal.internshipchallenge.repository.UserRepository;
+import com.santoshdhakal.internshipchallenge.viewmodels.SplashViewModel;
 
-import java.util.ArrayList;
-import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    UserRepository userRepository;
+    SplashViewModel splashViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final AppDatabase db = AppDatabase.getDatabase(this);
+        splashViewModel = ViewModelProviders.of(this).get(SplashViewModel.class);
 
-        new PopulateDbAsync(db).execute();
+        splashViewModel.getMessage().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        TextView textView = (TextView) findViewById(R.id.textview_hello);
+
+        textView.setOnClickListener(this);
 
     }
 
-    private static class PopulateDbAsync extends AsyncTask<Void, Void, ArrayList<UserModel>> {
-
-        AppDatabase db;
-
-        public PopulateDbAsync(AppDatabase db) {
-            this.db = db;
-        }
-
-        @Override
-        protected ArrayList<UserModel> doInBackground(Void... voids) {
-            List<UserModel> users =  db.userDao().getAll();
-            return (ArrayList<UserModel>)users;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<UserModel> userModels) {
-            super.onPostExecute(userModels);
-
-            for (UserModel user: userModels) {
-                System.out.println("Name = " + user.getUsername());
-            }
-        }
+    @Override
+    public void onClick(View v) {
+        String test = "";
+        splashViewModel.getMessage().setValue("Test Values");
     }
 }

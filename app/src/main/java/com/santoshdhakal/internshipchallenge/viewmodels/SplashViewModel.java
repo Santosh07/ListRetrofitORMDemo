@@ -2,35 +2,32 @@ package com.santoshdhakal.internshipchallenge.viewmodels;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
-import android.content.Intent;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
-import com.santoshdhakal.internshipchallenge.MainActivity;
-import com.santoshdhakal.internshipchallenge.SplashActivity;
-import com.santoshdhakal.internshipchallenge.models.PostModel;
 import com.santoshdhakal.internshipchallenge.models.UserModel;
 import com.santoshdhakal.internshipchallenge.repository.UserRepository;
-import com.santoshdhakal.internshipchallenge.services.WebService;
-import com.santoshdhakal.internshipchallenge.singletons.AppDatabase;
-import com.santoshdhakal.internshipchallenge.singletons.RetrofitClientInstance;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 public class SplashViewModel extends AndroidViewModel {
-    List<UserModel> users;
+    private MutableLiveData<String> message;
     UserRepository userRepository;
 
     public SplashViewModel(@NonNull Application application) {
         super(application);
-        userRepository = new UserRepository(application.getApplicationContext());
+        userRepository = new UserRepository(application.getApplicationContext(), getMessage());
 
         new DoInBackground().execute(userRepository);
+    }
+
+    public MutableLiveData<String> getMessage() {
+        if (message == null) {
+            message = new MutableLiveData<>();
+        }
+        return message;
     }
 
     private static class DoInBackground extends AsyncTask<UserRepository, Void, List<UserModel>> {

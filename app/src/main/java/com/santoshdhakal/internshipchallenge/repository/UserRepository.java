@@ -1,5 +1,6 @@
 package com.santoshdhakal.internshipchallenge.repository;
 
+import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -31,22 +32,25 @@ public class UserRepository {
     List<UserModel> users;
     WebService service;
 
-    public UserRepository(final Context context) {
+    private MutableLiveData<String> message;
+
+    public UserRepository(final Context context, MutableLiveData<String> message) {
         db = AppDatabase.getDatabase(context);
         service = RetrofitClientInstance.getRetrofitInstance().create(WebService.class);
+        this.message = message;
     }
 
     public List<UserModel> getAll() {
         users = db.userDao().getAll();
 
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        Callable<List<UserModel>> callable = new Callable<List<UserModel>>() {
-            @Override
-            public List<UserModel> call() throws Exception {
-                return null;
-            }
-        };
-        Future<List<UserModel>> future = executorService.submit(callable);
+//        ExecutorService executorService = Executors.newSingleThreadExecutor();
+//        Callable<List<UserModel>> callable = new Callable<List<UserModel>>() {
+//            @Override
+//            public List<UserModel> call() throws Exception {
+//                return null;
+//            }
+//        };
+//        Future<List<UserModel>> future = executorService.submit(callable);
 
         if (users.size() <= 0) {
             users = getUsersFromNetwork();
@@ -69,6 +73,7 @@ public class UserRepository {
 
             if (response.isSuccessful()) {
                 users = response.body();
+                message.postValue("Data Received successfully from Netowrk. User count : " + users.size());
             } else {
                 Log.d(this.toString(), " **** Retrofit Error :: " + response.message() + " ****");
             }
