@@ -29,7 +29,6 @@ import retrofit2.Response;
 
 public class UserRepository {
     AppDatabase db;
-    List<UserModel> users;
     WebService service;
 
     private MutableLiveData<String> message;
@@ -41,7 +40,7 @@ public class UserRepository {
     }
 
     public List<UserModel> getAll() {
-        users = db.userDao().getAll();
+        List<UserModel> users = db.userDao().getAll();
 
 //        ExecutorService executorService = Executors.newSingleThreadExecutor();
 //        Callable<List<UserModel>> callable = new Callable<List<UserModel>>() {
@@ -55,6 +54,7 @@ public class UserRepository {
         if (users.size() <= 0) {
             users = getUsersFromNetwork();
             db.userDao().insertAll(users.toArray(new UserModel[users.size()]));
+            message.postValue("Data Saved successfully from Netowrk. User count : " + users.size());
         }
 
         return users;
@@ -73,7 +73,6 @@ public class UserRepository {
 
             if (response.isSuccessful()) {
                 users = response.body();
-                message.postValue("Data Received successfully from Netowrk. User count : " + users.size());
             } else {
                 Log.d(this.toString(), " **** Retrofit Error :: " + response.message() + " ****");
             }

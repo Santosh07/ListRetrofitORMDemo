@@ -1,6 +1,5 @@
 package com.santoshdhakal.internshipchallenge;
 
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.support.annotation.Nullable;
@@ -10,37 +9,63 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.santoshdhakal.internshipchallenge.models.PostModel;
+import com.santoshdhakal.internshipchallenge.models.UserModel;
+import com.santoshdhakal.internshipchallenge.models.UserOfPost;
 import com.santoshdhakal.internshipchallenge.repository.UserRepository;
-import com.santoshdhakal.internshipchallenge.viewmodels.SplashViewModel;
+import com.santoshdhakal.internshipchallenge.viewmodels.HomeViewModel;
+
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     UserRepository userRepository;
-    SplashViewModel splashViewModel;
+    HomeViewModel homeViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        splashViewModel = ViewModelProviders.of(this).get(SplashViewModel.class);
+        TextView textView = (TextView) findViewById(R.id.textview_hello);
 
-        splashViewModel.getMessage().observe(this, new Observer<String>() {
+        textView.setOnClickListener(this);
+
+        homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
+
+        homeViewModel.populateUserOfPost();
+        homeViewModel.getMessage().observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
             }
         });
 
-        TextView textView = (TextView) findViewById(R.id.textview_hello);
+        homeViewModel.getUsers().observe(this, new Observer<List<UserModel>>() {
+            @Override
+            public void onChanged(@Nullable List<UserModel> users) {
 
-        textView.setOnClickListener(this);
+            }
+        });
 
+        homeViewModel.getPosts().observe(this, new Observer<List<PostModel>>() {
+            @Override
+            public void onChanged(@Nullable List<PostModel> postModels) {
+
+            }
+        });
+
+        homeViewModel.getUserOfPost().observe(this, new Observer<List<UserOfPost>>() {
+            @Override
+            public void onChanged(@Nullable List<UserOfPost> userOfPosts) {
+                System.out.println("Count " + userOfPosts.size());
+            }
+        });
     }
 
     @Override
     public void onClick(View v) {
         String test = "";
-        splashViewModel.getMessage().setValue("Test Values");
+        homeViewModel.getMessage().setValue("Test Values");
     }
 }

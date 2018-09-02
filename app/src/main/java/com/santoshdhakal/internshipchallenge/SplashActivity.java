@@ -6,28 +6,51 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
-import com.santoshdhakal.internshipchallenge.viewmodels.SplashViewModel;
+import com.santoshdhakal.internshipchallenge.models.PostModel;
+import com.santoshdhakal.internshipchallenge.models.UserModel;
+import com.santoshdhakal.internshipchallenge.viewmodels.HomeViewModel;
+
+import java.util.List;
 
 public class SplashActivity extends AppCompatActivity {
+
+    boolean isUsersPopulated, isPostsPopulated;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        SplashViewModel splashViewModel = ViewModelProviders.of(this).get(SplashViewModel.class);
+        HomeViewModel homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
 
-        splashViewModel.getMessage().observe(this, new Observer<String>() {
+        homeViewModel.populateUsers();
+        homeViewModel.populatePosts();
+
+        homeViewModel.getUsers().observe(this, new Observer<List<UserModel>>() {
             @Override
-            public void onChanged(@Nullable String s) {
-                Toast.makeText(SplashActivity.this, s, Toast.LENGTH_SHORT).show();
+            public void onChanged(@Nullable List<UserModel> users) {
+                isUsersPopulated = true;
+
+                startMainActivity();
             }
         });
 
-        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
+        homeViewModel.getPosts().observe(this, new Observer<List<PostModel>>() {
+            @Override
+            public void onChanged(@Nullable List<PostModel> postModels) {
+                isPostsPopulated = true;
+
+                startMainActivity();
+            }
+        });
+    }
+
+    private void startMainActivity() {
+        if (isPostsPopulated && isUsersPopulated) {
+            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 }
