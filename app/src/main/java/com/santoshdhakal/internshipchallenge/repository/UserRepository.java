@@ -53,7 +53,7 @@ public class UserRepository {
 
         if (users.size() <= 0) {
             users = getUsersFromNetwork();
-            db.userDao().insertAll(users.toArray(new UserModel[users.size()]));
+            insertAll(users.toArray(new UserModel[users.size()]));
             message.postValue("Data Saved successfully from Netowrk. User count : " + users.size());
         }
 
@@ -82,28 +82,5 @@ public class UserRepository {
         }
 
         return users;
-
-//        Asynchronous call to retrofit
-//        callUser.enqueue(new Callback<List<UserModel>>() {
-//            @Override
-//            public void onResponse(Call<List<UserModel>> call, Response<List<UserModel>> response) {
-//                ArrayList<UserModel> usersList = (ArrayList<UserModel>) response.body();
-//
-//                insertAll(usersList.toArray(new UserModel[usersList.size()]));
-//
-//                System.out.println(usersList.size());
-//
-//                for (UserModel model: usersList) {
-//                    System.out.println("Id : " + model.getUsername());
-//                }
-//
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<List<UserModel>> call, Throwable t) {
-//
-//            }
-//        });
     }
 }

@@ -2,6 +2,8 @@ package com.santoshdhakal.internshipchallenge;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -11,14 +13,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.santoshdhakal.internshipchallenge.models.PostModel;
 import com.santoshdhakal.internshipchallenge.models.UserModel;
 import com.santoshdhakal.internshipchallenge.models.UserOfPost;
-import com.santoshdhakal.internshipchallenge.repository.UserRepository;
+import com.santoshdhakal.internshipchallenge.repository.CommentRepository;
 import com.santoshdhakal.internshipchallenge.viewmodels.HomeViewModel;
 
 import java.util.List;
@@ -39,7 +40,13 @@ public class MainActivity extends AppCompatActivity {
 
         homeViewModel.populateUserOfPost();
 
-        postsAdapter = new PostsAdapter();
+        RecyclerViewClickListener listener = new RecyclerViewClickListener() {
+            @Override
+            public void onViewClick(View view, int position) {
+            startActivity(new Intent(MainActivity.this, CommentActivity.class));
+            }
+        };
+        postsAdapter = new PostsAdapter(listener);
 
         setObservers();
 
@@ -80,14 +87,43 @@ public class MainActivity extends AppCompatActivity {
 
     public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostsViewHolder> {
         List<UserOfPost> userOfPosts;
+        RecyclerViewClickListener listener;
 
-        public class PostsViewHolder extends RecyclerView.ViewHolder {
-            public TextView test;
+        public PostsAdapter(RecyclerViewClickListener listener) {
+            this.listener = listener;
+        }
 
-            public PostsViewHolder(View itemView) {
+        public class PostsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+            RecyclerViewClickListener listener;
+
+            public TextView firstLetterTextView;
+            public TextView userNameTextView;
+            public TextView addressAndCompanyTextView;
+            public TextView postTitleTextView;
+            public TextView postBodyTextView;
+            public TextView commentIconTextView;
+
+            public PostsViewHolder(View itemView, RecyclerViewClickListener listener) {
                 super(itemView);
 
-                test = (TextView) itemView.findViewById(R.id.textView);
+                this.listener = listener;
+
+                firstLetterTextView = (TextView) itemView.findViewById(R.id.textView_first_letter);
+                userNameTextView = (TextView) itemView.findViewById(R.id.textView_user_name);
+                addressAndCompanyTextView = (TextView) itemView.findViewById(R.id.textView_address_and_company);
+                postTitleTextView = (TextView) itemView.findViewById(R.id.textView_post_title);
+                postBodyTextView =(TextView) itemView.findViewById(R.id.textView_post_body);
+                commentIconTextView = (TextView) itemView.findViewById(R.id.textView_comment_icon);
+
+                Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/fa-regular-400.ttf");
+                commentIconTextView.setTypeface(typeface);
+
+                commentIconTextView.setOnClickListener(this);
+            }
+
+            @Override
+            public void onClick(View v) {
+                listener.onViewClick(v, getAdapterPosition());
             }
         }
 
@@ -96,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
         public PostsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.posts_list_row, parent, false);
 
-            return new PostsViewHolder(view);
+            return new PostsViewHolder(view, listener);
         }
 
         @Override
@@ -104,9 +140,19 @@ public class MainActivity extends AppCompatActivity {
             if (userOfPosts != null) {
                 UserOfPost userOfPost = userOfPosts.get(position);
 
-                holder.test.setText(userOfPost.postModel.getTitle() + " - " + userOfPost.user.get(0).getName());
+                UserModel user = userOfPost.user.get(0);
+
+                holder.firstLetterTextView.setText(user.getName().substring(0,1));
+                holder.userNameTextView.setText(user.getName());
+                holder.addressAndCompanyTextView.setText(user.getCompany().getName() + ", " + user.getEmail());
+                holder.postTitleTextView.setText(userOfPost.postModel.getTitle());
+                holder.postBodyTextView.setText(userOfPost.postModel.getBody());
             } else {
-                holder.test.setText("");
+                holder.userNameTextView.setText("");
+                holder.firstLetterTextView.setText("");
+                holder.addressAndCompanyTextView.setText("");
+                holder.postTitleTextView.setText("");
+                holder.postBodyTextView.setText("");
             }
         }
 
@@ -126,5 +172,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
+    public interface RecyclerViewClickListener {
+        void onViewClick(View view, int position);
+    }
 }

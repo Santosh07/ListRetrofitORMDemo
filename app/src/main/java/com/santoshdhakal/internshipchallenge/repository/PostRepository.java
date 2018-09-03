@@ -32,16 +32,20 @@ public class PostRepository {
 
         if (posts.size() <= 0) {
             posts = getPostsFromNetwork();
-            db.postDao().insertAll(posts.toArray(new PostModel[posts.size()]));
+            //db.postDao().insertAll(posts.toArray(new PostModel[posts.size()]));
+            insertAll(posts.toArray(new PostModel[posts.size()]));
         }
 
         return posts;
     }
 
+    public void insertAll(PostModel... postModels) {
+        db.postDao().insertAll(postModels);
+    }
+
     public LiveData<List<UserOfPost>> getUserOfPost() {
         return db.postDao().getUserOfPost();
     }
-
 
     private List<PostModel> getPostsFromNetwork() {
         List<PostModel> posts = new ArrayList<>();
