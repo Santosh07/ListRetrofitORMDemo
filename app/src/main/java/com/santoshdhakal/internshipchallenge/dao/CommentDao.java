@@ -17,4 +17,10 @@ public interface CommentDao {
 
     @Query("SELECT * FROM comments")
     LiveData<List<CommentModel>> getAll();
+
+    @Query("SELECT * FROM comments "
+                + "JOIN posts "
+                + "ON comments.postId = posts.id "
+                + "WHERE comments.postId = :postId")
+    LiveData<List<CommentModel>> getAllCommentOfPost(Integer postId);
 }

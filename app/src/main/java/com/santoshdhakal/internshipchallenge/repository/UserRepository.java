@@ -42,15 +42,6 @@ public class UserRepository {
     public List<UserModel> getAll() {
         List<UserModel> users = db.userDao().getAll();
 
-//        ExecutorService executorService = Executors.newSingleThreadExecutor();
-//        Callable<List<UserModel>> callable = new Callable<List<UserModel>>() {
-//            @Override
-//            public List<UserModel> call() throws Exception {
-//                return null;
-//            }
-//        };
-//        Future<List<UserModel>> future = executorService.submit(callable);
-
         if (users.size() <= 0) {
             users = getUsersFromNetwork();
             insertAll(users.toArray(new UserModel[users.size()]));

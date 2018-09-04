@@ -15,6 +15,7 @@ import com.santoshdhakal.internshipchallenge.models.CommentModel;
 import com.santoshdhakal.internshipchallenge.services.WebService;
 import com.santoshdhakal.internshipchallenge.singletons.AppDatabase;
 import com.santoshdhakal.internshipchallenge.singletons.RetrofitClientInstance;
+import com.santoshdhakal.internshipchallenge.utils.Utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,25 +28,40 @@ import retrofit2.Response;
 public class CommentRepository {
     AppDatabase db;
     WebService webService;
+    Context context;
+
+    private MutableLiveData<String> message;
 
     public CommentRepository(final Context context) {
         db = AppDatabase.getDatabase(context);
         webService = RetrofitClientInstance.getRetrofitInstance().create(WebService.class);
+        this.context = context;
+    }
+
+    public MutableLiveData<String> getMessage() {
+        if (message == null) {
+            message = new MutableLiveData<>();
+        }
+        return message;
     }
 
     public LiveData<List<CommentModel>> getAll(final Integer postId) {
         final MediatorLiveData<List<CommentModel>> mediatorLiveData = new MediatorLiveData<>();
 
-        mediatorLiveData.addSource(db.commentDao().getAll(), new Observer<List<CommentModel>>() {
+        mediatorLiveData.addSource(db.commentDao().getAllCommentOfPost(postId), new Observer<List<CommentModel>>() {
             @Override
             public void onChanged(@Nullable List<CommentModel> commentModels) {
                 if (commentModels.size() <= 0) {
-                    mediatorLiveData.addSource(getCommentsFromNetwork(postId), new Observer<List<CommentModel>>() {
-                        @Override
-                        public void onChanged(@Nullable List<CommentModel> commentModels) {
-                            mediatorLiveData.postValue(commentModels);
-                        }
-                    });
+                    LiveData<List<CommentModel>> commentsFromNetwork = getCommentsFromNetwork(postId);
+                    if (commentsFromNetwork != null) {
+                        mediatorLiveData.addSource(commentsFromNetwork, new Observer<List<CommentModel>>() {
+                            @Override
+                            public void onChanged(@Nullable List<CommentModel> commentModels) {
+                                mediatorLiveData.postValue(commentModels);
+                                insertAll(commentModels.toArray(new CommentModel[commentModels.size()]));
+                            }
+                        });
+                    }
                 } else {
                     mediatorLiveData.postValue(commentModels);
                 }
@@ -55,8 +71,12 @@ public class CommentRepository {
         return mediatorLiveData;
     }
 
-
     private LiveData<List<CommentModel>> getCommentsFromNetwork(Integer postId) {
+        if (!Utils.isInternetAvailable(context)) {
+            getMessage().setValue(Utils.INTERNET_UNAVAILABLE);
+            return null;
+        }
+
         final MutableLiveData<List<CommentModel>> commentModels = new MutableLiveData<>();
 
         Call<List<CommentModel>> callModel = webService.getAllComments(postId);

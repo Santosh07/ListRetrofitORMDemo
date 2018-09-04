@@ -19,7 +19,6 @@ import android.widget.Toast;
 import com.santoshdhakal.internshipchallenge.models.PostModel;
 import com.santoshdhakal.internshipchallenge.models.UserModel;
 import com.santoshdhakal.internshipchallenge.models.UserOfPost;
-import com.santoshdhakal.internshipchallenge.repository.CommentRepository;
 import com.santoshdhakal.internshipchallenge.viewmodels.HomeViewModel;
 
 import java.util.List;
@@ -42,8 +41,10 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerViewClickListener listener = new RecyclerViewClickListener() {
             @Override
-            public void onViewClick(View view, int position) {
-            startActivity(new Intent(MainActivity.this, CommentActivity.class));
+            public void onViewClick(View view, int position, int postId) {
+                Intent intent = new Intent(MainActivity.this, CommentActivity.class);
+                intent.putExtra("postId", postId);
+                startActivity(intent);
             }
         };
         postsAdapter = new PostsAdapter(listener);
@@ -123,14 +124,14 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                listener.onViewClick(v, getAdapterPosition());
+                listener.onViewClick(v, getAdapterPosition(), userOfPosts.get(getAdapterPosition()).postModel.getId());
             }
         }
 
         @NonNull
         @Override
         public PostsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.posts_list_row, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_row_posts, parent, false);
 
             return new PostsViewHolder(view, listener);
         }
@@ -173,6 +174,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public interface RecyclerViewClickListener {
-        void onViewClick(View view, int position);
+        void onViewClick(View view, int position, int postId);
     }
 }

@@ -3,6 +3,7 @@ package com.santoshdhakal.internshipchallenge.viewmodels;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
@@ -25,5 +26,9 @@ public class CommentViewModel extends AndroidViewModel {
             comments = commentRepository.getAll(postId);
         }
         return comments;
+    }
+
+    public MutableLiveData<String> getMessage() {
+        return commentRepository.getMessage();
     }
 }

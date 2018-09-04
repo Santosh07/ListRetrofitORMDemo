@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">InternshipChallenge</string>
     <string name="title_activity_splash">SplashActivity</string>
-    <string name="home_title">Posts</string>
+    <string name="title_activity_post">Posts</string>
+    <string name="title_activity_comment">Comments</string>
+
 
     <!-- Font Awesome icons -->
     <string name="icon_comment">&#xf27a;</string>

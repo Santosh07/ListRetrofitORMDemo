@@ -113,5 +113,4 @@ public class HomeViewModel extends AndroidViewModel {
         }
     }
 
-    //private static class
 }
