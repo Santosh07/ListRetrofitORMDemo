@@ -9,13 +9,12 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.santoshdhakal.internshipchallenge.models.PostModel;
 import com.santoshdhakal.internshipchallenge.models.UserModel;
+import com.santoshdhakal.internshipchallenge.models.UserOfPost;
 import com.santoshdhakal.internshipchallenge.viewmodels.HomeViewModel;
 
 import java.util.List;
 
 public class SplashActivity extends AppCompatActivity {
-
-    boolean isUsersPopulated, isPostsPopulated;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,33 +23,13 @@ public class SplashActivity extends AppCompatActivity {
 
         HomeViewModel homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
 
-        homeViewModel.populateUsers();
-        homeViewModel.populatePosts();
-
-        homeViewModel.getUsers().observe(this, new Observer<List<UserModel>>() {
+        homeViewModel.getUserOfPost().observe(this, new Observer<List<UserOfPost>>() {
             @Override
-            public void onChanged(@Nullable List<UserModel> users) {
-                isUsersPopulated = true;
-
-                startMainActivity();
+            public void onChanged(@Nullable List<UserOfPost> userOfPosts) {
+                Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
-
-        homeViewModel.getPosts().observe(this, new Observer<List<PostModel>>() {
-            @Override
-            public void onChanged(@Nullable List<PostModel> postModels) {
-                isPostsPopulated = true;
-
-                startMainActivity();
-            }
-        });
-    }
-
-    private void startMainActivity() {
-        if (isPostsPopulated && isUsersPopulated) {
-            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        }
     }
 }

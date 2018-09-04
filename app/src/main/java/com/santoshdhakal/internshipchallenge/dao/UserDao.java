@@ -1,5 +1,6 @@
 package com.santoshdhakal.internshipchallenge.dao;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
@@ -13,7 +14,7 @@ import java.util.List;
 public interface UserDao {
 
     @Query("SELECT * FROM users")
-    List<UserModel> getAll();
+    LiveData<List<UserModel>> getAll();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(UserModel... users);

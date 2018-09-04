@@ -13,7 +13,6 @@ import com.santoshdhakal.internshipchallenge.repository.CommentRepository;
 import java.util.List;
 
 public class CommentViewModel extends AndroidViewModel {
-    LiveData<List<CommentModel>> comments;
     CommentRepository commentRepository;
 
     public CommentViewModel(@NonNull Application application) {
@@ -22,10 +21,7 @@ public class CommentViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<CommentModel>> getComments(Integer postId) {
-        if (comments == null) {
-            comments = commentRepository.getAll(postId);
-        }
-        return comments;
+        return commentRepository.getAll(postId);
     }
 
     public MutableLiveData<String> getMessage() {

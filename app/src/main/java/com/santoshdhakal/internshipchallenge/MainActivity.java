@@ -37,8 +37,6 @@ public class MainActivity extends AppCompatActivity {
 
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
 
-        homeViewModel.populateUserOfPost();
-
         RecyclerViewClickListener listener = new RecyclerViewClickListener() {
             @Override
             public void onViewClick(View view, int position, int postId) {
@@ -56,32 +54,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setObservers() {
-        homeViewModel.getMessage().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        homeViewModel.getUsers().observe(this, new Observer<List<UserModel>>() {
-            @Override
-            public void onChanged(@Nullable List<UserModel> users) {
-
-            }
-        });
-
-        homeViewModel.getPosts().observe(this, new Observer<List<PostModel>>() {
-            @Override
-            public void onChanged(@Nullable List<PostModel> postModels) {
-
-            }
-        });
-
         homeViewModel.getUserOfPost().observe(this, new Observer<List<UserOfPost>>() {
             @Override
             public void onChanged(@Nullable List<UserOfPost> userOfPosts) {
                 postsAdapter.setData(userOfPosts);
-                System.out.println("Count " + userOfPosts.size());
             }
         });
     }

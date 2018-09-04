@@ -84,8 +84,11 @@ public class CommentRepository {
         callModel.enqueue(new Callback<List<CommentModel>>() {
             @Override
             public void onResponse(Call<List<CommentModel>> call, Response<List<CommentModel>> response) {
-                commentModels.postValue(response.body());
-                Log.d(this.toString(), " **** Retrofit Error :: " + response.message() + " ****");
+                if (response.isSuccessful()) {
+                    commentModels.postValue(response.body());
+                } else {
+                    Log.d(this.toString(), " **** Retrofit Error :: " + response.message() + " ****");
+                }
             }
 
             @Override

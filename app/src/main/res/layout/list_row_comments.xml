@@ -65,6 +65,7 @@
             android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:background="@color/gainsboro"
             android:padding="8dp"
             android:text="TextView"

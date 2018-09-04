@@ -18,7 +18,7 @@ public interface PostDao {
     void insertAll(PostModel... posts);
 
     @Query("SELECT * FROM posts")
-    List<PostModel> getAll();
+    LiveData<List<PostModel>> getAll();
 
     @Query("SELECT * FROM posts ")
     LiveData<List<UserOfPost>> getUserOfPost();

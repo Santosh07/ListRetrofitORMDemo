@@ -1,8 +1,13 @@
 package com.santoshdhakal.internshipchallenge.repository;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.santoshdhakal.internshipchallenge.MainActivity;
@@ -12,6 +17,7 @@ import com.santoshdhakal.internshipchallenge.models.UserModel;
 import com.santoshdhakal.internshipchallenge.services.WebService;
 import com.santoshdhakal.internshipchallenge.singletons.AppDatabase;
 import com.santoshdhakal.internshipchallenge.singletons.RetrofitClientInstance;
+import com.santoshdhakal.internshipchallenge.utils.Utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,48 +36,72 @@ import retrofit2.Response;
 public class UserRepository {
     AppDatabase db;
     WebService service;
+    Context context;
 
-    private MutableLiveData<String> message;
-
-    public UserRepository(final Context context, MutableLiveData<String> message) {
+    public UserRepository(final Context context) {
         db = AppDatabase.getDatabase(context);
         service = RetrofitClientInstance.getRetrofitInstance().create(WebService.class);
-        this.message = message;
+        this.context = context;
     }
 
-    public List<UserModel> getAll() {
-        List<UserModel> users = db.userDao().getAll();
+    public LiveData<List<UserModel>> getAll() {
+        final MediatorLiveData<List<UserModel>> mediatorUserModels = new MediatorLiveData<>();
 
-        if (users.size() <= 0) {
-            users = getUsersFromNetwork();
-            insertAll(users.toArray(new UserModel[users.size()]));
-            message.postValue("Data Saved successfully from Netowrk. User count : " + users.size());
-        }
-
-        return users;
+        mediatorUserModels.addSource(db.userDao().getAll(), new Observer<List<UserModel>>() {
+            @Override
+            public void onChanged(@Nullable List<UserModel> userModels) {
+                if (userModels.size() <= 0) {
+                    if (Utils.isInternetAvailable(context)) {
+                        mediatorUserModels.addSource(getUsersFromNetwork(), new Observer<List<UserModel>>() {
+                            @Override
+                            public void onChanged(@Nullable List<UserModel> userModels) {
+                                insertAll(userModels.toArray(new UserModel[userModels.size()]));
+                                mediatorUserModels.setValue(userModels);
+                            }
+                        });
+                    } else {
+                        //send internet not available message.
+                    }
+                }
+                mediatorUserModels.setValue(userModels);
+            }
+        });
+        return mediatorUserModels;
     }
 
     public void insertAll(UserModel... users) {
-        db.userDao().insertAll(users);
+        new PopulateUsersInBackground().execute(users);
     }
 
-    private List<UserModel> getUsersFromNetwork() {
-        List<UserModel> users = new ArrayList<UserModel>();
+    private LiveData<List<UserModel>> getUsersFromNetwork() {
+        final MutableLiveData<List<UserModel>> mutableUserModels = new MutableLiveData<>();
+
         Call<List<UserModel>> callUser = service.getAllUsers();
-
-        try {
-            Response<List<UserModel>> response = callUser.execute();
-
-            if (response.isSuccessful()) {
-                users = response.body();
-            } else {
-                Log.d(this.toString(), " **** Retrofit Error :: " + response.message() + " ****");
+        callUser.enqueue(new Callback<List<UserModel>>() {
+            @Override
+            public void onResponse(Call<List<UserModel>> call, Response<List<UserModel>> response) {
+                if (response.isSuccessful()) {
+                    mutableUserModels.setValue(response.body());
+                } else {
+                    //send message
+                }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.d(this.toString(), " **** Network Error ****");
-        }
 
-        return users;
+            @Override
+            public void onFailure(Call<List<UserModel>> call, Throwable t) {
+
+            }
+        });
+
+        return mutableUserModels;
+    }
+
+    public class PopulateUsersInBackground extends AsyncTask<UserModel, Void, Void> {
+
+        @Override
+        protected Void doInBackground(UserModel... userModels) {
+            db.userDao().insertAll(userModels);
+            return null;
+        }
     }
 }
