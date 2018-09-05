@@ -1,3 +1,9 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="recycler_view_margin">8dp</dimen>
+    <dimen name="list_item_top_margin">8dp</dimen>
+    <dimen name="list_item_card_cornor_radius">4dp</dimen>
+
+    <dimen name="list_item_circular_icon_diameter">40dp</dimen>
 </resources>

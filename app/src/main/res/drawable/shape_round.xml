@@ -7,7 +7,7 @@
         android:color="@color/colorAccent"/>
 
     <size
-        android:width="48dp"
-        android:height="48dp" />
+        android:width="@dimen/list_item_circular_icon_diameter"
+        android:height="@dimen/list_item_circular_icon_diameter" />
 
 </shape>
