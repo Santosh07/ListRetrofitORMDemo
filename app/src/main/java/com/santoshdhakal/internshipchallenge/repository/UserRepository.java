@@ -38,6 +38,8 @@ public class UserRepository {
     WebService service;
     Context context;
 
+    private MutableLiveData<String> message;
+
     public UserRepository(final Context context) {
         db = AppDatabase.getDatabase(context);
         service = RetrofitClientInstance.getRetrofitInstance().create(WebService.class);
@@ -67,7 +69,7 @@ public class UserRepository {
                             }
                         });
                     } else {
-                        //send internet not available message.
+                        getMessage().setValue(Utils.INTERNET_UNAVAILABLE);
                     }
                 } else {
                     mediatorUserModels.setValue(userModels);
@@ -103,6 +105,13 @@ public class UserRepository {
         });
 
         return mutableUserModels;
+    }
+
+    public MutableLiveData<String> getMessage() {
+        if (message == null) {
+            message = new MutableLiveData<>();
+        }
+        return message;
     }
 
     public class PopulateUsersInBackground extends AsyncTask<UserModel, Void, Void> {

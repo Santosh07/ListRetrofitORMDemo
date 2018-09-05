@@ -32,6 +32,8 @@ public class PostRepository {
     WebService webService;
     Context context;
 
+    MutableLiveData<String> message;
+
     public PostRepository(final Context context) {
         db = AppDatabase.getDatabase(context);
         webService = RetrofitClientInstance.getRetrofitInstance().create(WebService.class);
@@ -61,7 +63,7 @@ public class PostRepository {
                             }
                         });
                     } else {
-                        //send message
+                        getMessage().setValue(Utils.INTERNET_UNAVAILABLE);
                     }
                 }
                 postModelMediator.setValue(postModels);
@@ -101,6 +103,13 @@ public class PostRepository {
         });
 
         return mutablePostModel;
+    }
+
+    public MutableLiveData<String> getMessage() {
+        if (message == null) {
+            message = new MutableLiveData<>();
+        }
+        return message;
     }
 
     public class PopulatePostInBackground extends AsyncTask<PostModel, Void, Void> {

@@ -40,4 +40,12 @@ public class HomeViewModel extends AndroidViewModel {
     public LiveData<List<UserOfPost>> getUserOfPost() {
         return postRepository.getUserOfPost();
     }
+
+    public LiveData<String> getMessageFromUserRepo() {
+        return userRepository.getMessage();
+    }
+
+    public LiveData<String> getMessageFromPostRepo() {
+        return postRepository.getMessage();
+    }
 }

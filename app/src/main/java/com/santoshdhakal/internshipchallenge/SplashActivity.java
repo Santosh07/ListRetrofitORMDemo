@@ -6,10 +6,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.santoshdhakal.internshipchallenge.models.PostModel;
 import com.santoshdhakal.internshipchallenge.models.UserModel;
 import com.santoshdhakal.internshipchallenge.models.UserOfPost;
+import com.santoshdhakal.internshipchallenge.utils.Utils;
 import com.santoshdhakal.internshipchallenge.viewmodels.HomeViewModel;
 
 import java.util.List;
@@ -41,6 +43,26 @@ public class SplashActivity extends AppCompatActivity {
                     isPostsReceived = true;
                 }
                 isAllDataAvailable();
+            }
+        });
+
+        homeViewModel.getMessageFromPostRepo().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                if (s.equals(Utils.INTERNET_UNAVAILABLE)) {
+                    Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
+                    finish();
+                }
+            }
+        });
+
+        homeViewModel.getMessageFromUserRepo().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                if (s.equals(Utils.INTERNET_UNAVAILABLE)) {
+                    Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
+                    finish();
+                }
             }
         });
     }
