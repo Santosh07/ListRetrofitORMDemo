@@ -15,6 +15,7 @@ import com.santoshdhakal.internshipchallenge.viewmodels.HomeViewModel;
 import java.util.List;
 
 public class SplashActivity extends AppCompatActivity {
+    boolean isPostsReceived, isUsersReceived;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,13 +24,32 @@ public class SplashActivity extends AppCompatActivity {
 
         HomeViewModel homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
 
-        homeViewModel.getUserOfPost().observe(this, new Observer<List<UserOfPost>>() {
+        homeViewModel.getUsers().observe(this, new Observer<List<UserModel>>() {
             @Override
-            public void onChanged(@Nullable List<UserOfPost> userOfPosts) {
-                Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
+            public void onChanged(@Nullable List<UserModel> userModels) {
+                if (userModels.size() > 0) {
+                    isUsersReceived = true;
+                }
+                isAllDataAvailable();
             }
         });
+
+        homeViewModel.getPosts().observe(this, new Observer<List<PostModel>>() {
+            @Override
+            public void onChanged(@Nullable List<PostModel> postModels) {
+                if (postModels.size() > 0) {
+                    isPostsReceived = true;
+                }
+                isAllDataAvailable();
+            }
+        });
+    }
+
+    public void isAllDataAvailable() {
+        if (isPostsReceived && isUsersReceived) {
+            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 }

@@ -116,14 +116,15 @@ public class MainActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull PostsViewHolder holder, int position) {
             if (userOfPosts != null) {
                 UserOfPost userOfPost = userOfPosts.get(position);
+                if (userOfPost.user.size() > 0) {
+                    UserModel user = userOfPost.user.get(0);
 
-                UserModel user = userOfPost.user.get(0);
-
-                holder.firstLetterTextView.setText(user.getName().substring(0,1));
-                holder.userNameTextView.setText(user.getName());
-                holder.addressAndCompanyTextView.setText(user.getCompany().getName() + ", " + user.getEmail());
-                holder.postTitleTextView.setText(userOfPost.postModel.getTitle());
-                holder.postBodyTextView.setText(userOfPost.postModel.getBody());
+                    holder.firstLetterTextView.setText(user.getName().substring(0,1));
+                    holder.userNameTextView.setText(user.getName());
+                    holder.addressAndCompanyTextView.setText(user.getCompany().getName() + ", " + user.getEmail());
+                    holder.postTitleTextView.setText(userOfPost.postModel.getTitle());
+                    holder.postBodyTextView.setText(userOfPost.postModel.getBody());
+                }
             } else {
                 holder.userNameTextView.setText("");
                 holder.firstLetterTextView.setText("");

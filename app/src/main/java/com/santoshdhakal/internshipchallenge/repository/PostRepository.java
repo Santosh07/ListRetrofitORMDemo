@@ -21,6 +21,7 @@ import com.santoshdhakal.internshipchallenge.utils.Utils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,16 +41,23 @@ public class PostRepository {
     public LiveData<List<PostModel>> getAll() {
         final MediatorLiveData<List<PostModel>> postModelMediator = new MediatorLiveData<>();
 
-        postModelMediator.addSource(db.postDao().getAll(), new Observer<List<PostModel>>() {
+        final LiveData<List<PostModel>> source1 = db.postDao().getAll();
+
+        postModelMediator.addSource(source1, new Observer<List<PostModel>>() {
             @Override
             public void onChanged(@Nullable List<PostModel> postModels) {
                 if (postModels.size() <= 0) {
                     if (Utils.isInternetAvailable(context)) {
-                        postModelMediator.addSource(getPostsFromNetwork(), new Observer<List<PostModel>>() {
+
+                        final LiveData<List<PostModel>> source2 = getPostsFromNetwork();
+
+                        postModelMediator.addSource(source2, new Observer<List<PostModel>>() {
                             @Override
                             public void onChanged(@Nullable List<PostModel> postModels) {
+                                postModelMediator.removeSource(source1);
+                                postModelMediator.removeSource(source2);
+                                postModelMediator.postValue(postModels);
                                 insertAll(postModels.toArray(new PostModel[postModels.size()]));
-                                postModelMediator.setValue(postModels);
                             }
                         });
                     } else {
@@ -67,27 +75,8 @@ public class PostRepository {
         new PopulatePostInBackground().execute(postModels);
     }
 
-    public LiveData<List<UserOfPost>> getUserOfPost(UserRepository userRepository) {
-        final MediatorLiveData<List<UserOfPost>> postMediatorLiveData = new MediatorLiveData<>();
-
-        postMediatorLiveData.addSource(userRepository.getAll(), new Observer<List<UserModel>>() {
-            @Override
-            public void onChanged(@Nullable final List<UserModel> userModels) {
-                postMediatorLiveData.addSource(getAll(), new Observer<List<PostModel>>() {
-                    @Override
-                    public void onChanged(@Nullable List<PostModel> postModels) {
-                        postMediatorLiveData.addSource(db.postDao().getUserOfPost(), new Observer<List<UserOfPost>>() {
-                            @Override
-                            public void onChanged(@Nullable List<UserOfPost> userOfPosts) {
-                                postMediatorLiveData.setValue(userOfPosts);
-                            }
-                        });
-                    }
-                });
-            }
-        });
-
-        return postMediatorLiveData;
+    public LiveData<List<UserOfPost>> getUserOfPost() {
+        return db.postDao().getUserOfPost();
     }
 
     private LiveData<List<PostModel>> getPostsFromNetwork() {

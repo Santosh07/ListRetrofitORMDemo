@@ -47,23 +47,32 @@ public class UserRepository {
     public LiveData<List<UserModel>> getAll() {
         final MediatorLiveData<List<UserModel>> mediatorUserModels = new MediatorLiveData<>();
 
-        mediatorUserModels.addSource(db.userDao().getAll(), new Observer<List<UserModel>>() {
+        final LiveData<List<UserModel>> sourceDB = db.userDao().getAll();
+
+        mediatorUserModels.addSource(sourceDB, new Observer<List<UserModel>>() {
             @Override
             public void onChanged(@Nullable List<UserModel> userModels) {
                 if (userModels.size() <= 0) {
                     if (Utils.isInternetAvailable(context)) {
-                        mediatorUserModels.addSource(getUsersFromNetwork(), new Observer<List<UserModel>>() {
+                        final LiveData<List<UserModel>> sourceNW = getUsersFromNetwork();
+                        mediatorUserModels.addSource(sourceNW, new Observer<List<UserModel>>() {
                             @Override
                             public void onChanged(@Nullable List<UserModel> userModels) {
+                                mediatorUserModels.removeSource(sourceDB);
+                                mediatorUserModels.removeSource(sourceNW);
+
+                                mediatorUserModels.postValue(userModels);
                                 insertAll(userModels.toArray(new UserModel[userModels.size()]));
-                                mediatorUserModels.setValue(userModels);
+
                             }
                         });
                     } else {
                         //send internet not available message.
                     }
+                } else {
+                    mediatorUserModels.setValue(userModels);
                 }
-                mediatorUserModels.setValue(userModels);
+
             }
         });
         return mediatorUserModels;

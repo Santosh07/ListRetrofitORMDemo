@@ -29,7 +29,15 @@ public class HomeViewModel extends AndroidViewModel {
         postRepository = new PostRepository(application.getApplicationContext());
     }
 
+    public LiveData<List<PostModel>> getPosts() {
+        return postRepository.getAll();
+    }
+
+    public LiveData<List<UserModel>> getUsers() {
+        return userRepository.getAll();
+    }
+
     public LiveData<List<UserOfPost>> getUserOfPost() {
-        return postRepository.getUserOfPost(userRepository);
+        return postRepository.getUserOfPost();
     }
 }
