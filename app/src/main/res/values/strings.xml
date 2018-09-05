@@ -7,4 +7,13 @@
 
     <!-- Font Awesome icons -->
     <string name="icon_comment">&#xf27a;</string>
+
+    <!-- list_row_comments -->
+    <string name="ph_email">Email</string>
+    <string name="ph_title">Title</string>
+    <string name="ph_body">Body</string>
+
+    <string name="ph_name">Name</string>
+    <string name="ph_address">Address</string>
+
 </resources>

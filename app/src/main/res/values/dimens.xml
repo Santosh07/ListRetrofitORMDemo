@@ -3,7 +3,23 @@
 
     <dimen name="recycler_view_margin">8dp</dimen>
     <dimen name="list_item_top_margin">8dp</dimen>
+    <dimen name="margin_list_item_side">8dp</dimen>
     <dimen name="list_item_card_cornor_radius">4dp</dimen>
 
     <dimen name="list_item_circular_icon_diameter">40dp</dimen>
+    <dimen name="margin_to_card_edge">16dp</dimen>
+    <dimen name="margin_to_card_edge_with_padding">8dp</dimen>
+    <dimen name="text_size_circular_name">24sp</dimen>
+
+    <dimen name="text_size_title">16sp</dimen>
+    <dimen name="text_siz_sub_title">14sp</dimen>
+
+    <dimen name="margin_divider_name">16dp</dimen>
+    <dimen name="margin_normal_text">8dp</dimen>
+    <dimen name="margin_divider_name_bottom">16dp</dimen>
+
+    <dimen name="padding_icon_font">12dp</dimen>
+    <dimen name="text_size_icon_font">24sp</dimen>
+
+    <dimen name="padding_text_body">8dp</dimen>
 </resources>
