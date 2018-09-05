@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">InternshipChallenge</string>
-    <string name="title_activity_splash">SplashActivity</string>
+    <string name="app_name">Santosh</string>
+    <string name="title_activity_splash">Santosh</string>
     <string name="title_activity_post">Posts</string>
     <string name="title_activity_comment">Comments</string>
 

@@ -48,9 +48,9 @@ public class CommentRepository {
     public LiveData<List<CommentModel>> getAll(final Integer postId) {
         final MediatorLiveData<List<CommentModel>> mediatorLiveData = new MediatorLiveData<>();
 
-        final LiveData<List<CommentModel>> source1 = db.commentDao().getAllCommentOfPost(postId);
+        final LiveData<List<CommentModel>> dbLiveDataSource = db.commentDao().getAllCommentOfPost(postId);
 
-        mediatorLiveData.addSource(source1, new Observer<List<CommentModel>>() {
+        mediatorLiveData.addSource(dbLiveDataSource, new Observer<List<CommentModel>>() {
             @Override
             public void onChanged(@Nullable List<CommentModel> commentModels) {
                 if (commentModels.size() <= 0) {
@@ -59,7 +59,7 @@ public class CommentRepository {
                         mediatorLiveData.addSource(commentsFromNetwork, new Observer<List<CommentModel>>() {
                             @Override
                             public void onChanged(@Nullable List<CommentModel> commentModels) {
-                                mediatorLiveData.removeSource(source1);
+                                mediatorLiveData.removeSource(dbLiveDataSource);
                                 mediatorLiveData.removeSource(commentsFromNetwork);
 
                                 mediatorLiveData.postValue(commentModels);

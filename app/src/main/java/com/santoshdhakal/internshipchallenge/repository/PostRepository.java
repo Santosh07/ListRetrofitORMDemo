@@ -43,21 +43,21 @@ public class PostRepository {
     public LiveData<List<PostModel>> getAll() {
         final MediatorLiveData<List<PostModel>> postModelMediator = new MediatorLiveData<>();
 
-        final LiveData<List<PostModel>> source1 = db.postDao().getAll();
+        final LiveData<List<PostModel>> dbLiveDataScource = db.postDao().getAll();
 
-        postModelMediator.addSource(source1, new Observer<List<PostModel>>() {
+        postModelMediator.addSource(dbLiveDataScource, new Observer<List<PostModel>>() {
             @Override
             public void onChanged(@Nullable List<PostModel> postModels) {
                 if (postModels.size() <= 0) {
                     if (Utils.isInternetAvailable(context)) {
 
-                        final LiveData<List<PostModel>> source2 = getPostsFromNetwork();
+                        final LiveData<List<PostModel>> nwLiveDataScource = getPostsFromNetwork();
 
-                        postModelMediator.addSource(source2, new Observer<List<PostModel>>() {
+                        postModelMediator.addSource(dbLiveDataScource, new Observer<List<PostModel>>() {
                             @Override
                             public void onChanged(@Nullable List<PostModel> postModels) {
-                                postModelMediator.removeSource(source1);
-                                postModelMediator.removeSource(source2);
+                                postModelMediator.removeSource(dbLiveDataScource);
+                                postModelMediator.removeSource(nwLiveDataScource);
                                 postModelMediator.postValue(postModels);
                                 insertAll(postModels.toArray(new PostModel[postModels.size()]));
                             }
