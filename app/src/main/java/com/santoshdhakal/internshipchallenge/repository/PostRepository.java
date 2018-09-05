@@ -53,7 +53,7 @@ public class PostRepository {
 
                         final LiveData<List<PostModel>> nwLiveDataScource = getPostsFromNetwork();
 
-                        postModelMediator.addSource(dbLiveDataScource, new Observer<List<PostModel>>() {
+                        postModelMediator.addSource(nwLiveDataScource, new Observer<List<PostModel>>() {
                             @Override
                             public void onChanged(@Nullable List<PostModel> postModels) {
                                 postModelMediator.removeSource(dbLiveDataScource);
